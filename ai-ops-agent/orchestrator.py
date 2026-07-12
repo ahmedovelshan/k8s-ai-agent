@@ -120,7 +120,7 @@ def analyze(context: dict) -> dict:
         "prompt": prompt,
         "stream": False,
         "format": "json",
-        "keep_alive": "-1",   # keep model resident indefinitely - avoids slow cold reloads between incidents
+        "keep_alive": -1,   # keep model resident indefinitely - avoids slow cold reloads between incidents
         "options": {
             "temperature": 0.2,   # low temperature: we want consistent, factual RCA, not creative variation
             "num_predict": 600,
