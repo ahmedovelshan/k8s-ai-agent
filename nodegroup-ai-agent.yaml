@@ -1,11 +1,23 @@
 #This file contains information about the node group where the AI agent is running.
-# nodegroup-ai-agent.yaml
+# node-grp-ai.yaml
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
   name: ai-agent-k8s-cluster
   region: eu-central-1
+
+vpc:
+  id: vpc-001c8abddd6d2bb17
+  subnets:
+    public:
+      subnet-a:
+        id: subnet-038db949f07241522
+      subnet-b:
+        id: subnet-08d4e1fd32e3cb88c
+      subnet-c:
+        id: subnet-05b62d7d2e689e762
+  securityGroup: sg-07ce955a0a368ce03
 
 managedNodeGroups:
   - name: ai-agent-pool
@@ -18,6 +30,7 @@ managedNodeGroups:
     minSize: 1
     maxSize: 2
     volumeSize: 50
+    privateNetworking: false
     labels:
       workload: ai-agent
     taints:
