@@ -22,6 +22,7 @@ Design notes:
     it to the collector to gather logs/events/metrics.
 """
 
+import json
 import logging
 import os
 import time
@@ -30,6 +31,7 @@ from datetime import datetime, timezone
 from kubernetes import client, config, watch
 
 import collector
+import orchestrator
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO"),
@@ -71,7 +73,10 @@ def handle_incident(incident: dict):
         bool(context["logs_previous"]),
         context["resource_usage"],
     )
-    # TODO(phase 5): pass `context` to the RCA orchestrator
+
+    report = orchestrator.analyze(context)
+    log.warning("RCA REPORT: %s", json.dumps(report, indent=2))
+    # TODO(phase 6): push `report` to the dashboard instead of just logging it
 
 
 def _dedup_key(namespace, name, reason):
