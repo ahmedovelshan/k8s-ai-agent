@@ -37,9 +37,14 @@ spec:
           image: ollama/ollama:latest
           ports:
             - containerPort: 11434
+          env:
+            - name: OLLAMA_NUM_THREAD
+              value: "4"
+            - name: OLLAMA_NUM_PARALLEL
+              value: "1"
           resources:
             requests:
-              cpu: "2"
+              cpu: "3.5"
               memory: 8Gi
             limits:
               cpu: "3.5"
