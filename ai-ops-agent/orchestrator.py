@@ -35,6 +35,28 @@ REQUEST_TIMEOUT_SECONDS = int(os.environ.get("LLM_TIMEOUT_SECONDS", "240"))
 MAX_LOG_CHARS = 3000     # per log field (current/previous)
 MAX_EVENTS = 10
 
+# Well-known exit codes / reasons the model shouldn't have to guess at -
+# these are deterministic Kubernetes/Linux facts, not things requiring
+# inference. Feeding them as hints measurably improves small-model
+# accuracy versus letting it free-associate (e.g. it otherwise tends to
+# guess "segfault" for any nonzero exit code).
+KNOWN_EXIT_CODES = {
+    137: "128+9 = SIGKILL. In Kubernetes this is almost always an OOM kill (container exceeded its memory limit) or a manual/forced termination. It is NOT a segfault or application bug.",
+    143: "128+15 = SIGTERM. Normal graceful shutdown signal, often from a rolling update, scale-down, or node drain. Not necessarily an error condition on its own - check if this correlates with a deployment/scaling event.",
+    139: "128+11 = SIGSEGV, a genuine segmentation fault in the application binary. This IS an application-level memory bug.",
+    1: "Generic application error exit. The specific cause must come from the container's logs.",
+    126: "Command found but not executable - often a permissions issue or wrong entrypoint format in the image.",
+    127: "Command not found - the container's entrypoint/command references a binary that doesn't exist in the image.",
+}
+
+
+def _exit_code_hint(context: dict) -> str | None:
+    incident = context.get("incident", {})
+    code = incident.get("exit_code")
+    if code in KNOWN_EXIT_CODES:
+        return f"Known fact about exit code {code}: {KNOWN_EXIT_CODES[code]}"
+    return None
+
 SYSTEM_PROMPT = """You are a Kubernetes site-reliability expert analyzing a cluster incident.
 You are advisory only: you NEVER claim to have executed a command, only recommend one.
 Be concise. Respond with ONLY a JSON object, no other text, no markdown fences, matching exactly this shape:
@@ -65,6 +87,10 @@ def build_prompt(context: dict) -> str:
     resource_usage = context.get("resource_usage")
 
     parts = [f"## Incident\n{json.dumps(incident, indent=2)}"]
+
+    hint = _exit_code_hint(context)
+    if hint:
+        parts.append(f"## Hint (established fact, not a guess)\n{hint}")
 
     if pod_summary:
         parts.append(f"## Pod spec/status\n{json.dumps(pod_summary, indent=2)}")
