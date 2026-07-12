@@ -1,4 +1,5 @@
 #This file contains information about the node group where the AI agent is running.
+# nodegroup-ai-agent.yaml
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
@@ -8,12 +9,15 @@ metadata:
 
 managedNodeGroups:
   - name: ai-agent-pool
-    instanceType: m6i.2xlarge
+    instanceTypes:
+      - m6i.xlarge
+      - m5.xlarge
+      - m6a.xlarge
+    spot: true
     desiredCapacity: 1
     minSize: 1
-    maxSize: 1
+    maxSize: 2
     volumeSize: 50
-    #spot: true    # if you would like run your ai agent on spot instances
     labels:
       workload: ai-agent
     taints:
