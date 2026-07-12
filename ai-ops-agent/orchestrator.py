@@ -30,7 +30,7 @@ log = logging.getLogger("orchestrator")
 
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://ollama.ai-ops-agent.svc.cluster.local:11434")
 MODEL_NAME = os.environ.get("MODEL_NAME", "phi3.5:3.8b")
-REQUEST_TIMEOUT_SECONDS = int(os.environ.get("LLM_TIMEOUT_SECONDS", "120"))
+REQUEST_TIMEOUT_SECONDS = int(os.environ.get("LLM_TIMEOUT_SECONDS", "240"))
 
 MAX_LOG_CHARS = 3000     # per log field (current/previous)
 MAX_EVENTS = 10
@@ -120,6 +120,7 @@ def analyze(context: dict) -> dict:
         "prompt": prompt,
         "stream": False,
         "format": "json",
+        "keep_alive": "-1",   # keep model resident indefinitely - avoids slow cold reloads between incidents
         "options": {
             "temperature": 0.2,   # low temperature: we want consistent, factual RCA, not creative variation
             "num_predict": 600,
