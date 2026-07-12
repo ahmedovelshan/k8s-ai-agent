@@ -53,6 +53,8 @@ KNOWN_EXIT_CODES = {
 def _exit_code_hint(context: dict) -> str | None:
     incident = context.get("incident", {})
     code = incident.get("exit_code")
+    if code is None:
+        code = incident.get("last_exit_code")
     if code in KNOWN_EXIT_CODES:
         return f"Known fact about exit code {code}: {KNOWN_EXIT_CODES[code]}"
     return None
