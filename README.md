@@ -45,13 +45,14 @@ Then edit detector-deployment.yaml, replacing REPLACE_WITH_YOUR_ECR_IMAGE_URI wi
   kubectl apply -f detector-deployment.yaml
 
   kubectl get pods -n ai-ops-agent -l app=detector
-  kubectl logs -n ai-ops-agent -l app=detector -f
 
 Quick test
   kubectl logs -n ai-ops-agent -l app=detector -f
-  kubectl run crashtest --image=busybox --restart=Always -- sh -c "echo 'simulated failure: config file missing' && exit 1"
+  kubectl run crashtest --image=busybox --restart=Always -- sh -c "echo 'FATAL: cannot connect to database at db-service:5432 - connection refused' && exit 1"
   kubectl delete pod crashtest --ignore-not-found
 
+
+Step 4:
 
 
 
