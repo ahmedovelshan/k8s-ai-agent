@@ -14,13 +14,6 @@ spec:
         app: detector
     spec:
       serviceAccountName: detector
-      tolerations:
-        - key: workload
-          operator: Equal
-          value: ai-agent
-          effect: NoSchedule
-      nodeSelector:
-        workload: ai-agent
       containers:
         - name: detector
           image: REPLACE_WITH_YOUR_ECR_IMAGE_URI
