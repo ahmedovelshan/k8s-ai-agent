@@ -1,0 +1,24 @@
+#This file contains information about the node group where the AI agent is running.
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ai-agent-k8s-cluster
+  region: eu-central-1
+
+managedNodeGroups:
+  - name: ai-agent-pool
+    instanceType: m6i.2xlarge
+    desiredCapacity: 1
+    minSize: 1
+    maxSize: 1
+    volumeSize: 50
+    #spot: true    # if you would like run your ai agent on spot instances
+    labels:
+      workload: ai-agent
+    taints:
+      - key: workload
+        value: ai-agent
+        effect: NoSchedule
+    tags:
+      purpose: k8s-ai-ops-agent
