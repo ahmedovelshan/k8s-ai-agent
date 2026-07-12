@@ -47,4 +47,11 @@ Then edit detector-deployment.yaml, replacing REPLACE_WITH_YOUR_ECR_IMAGE_URI wi
   kubectl get pods -n ai-ops-agent -l app=detector
   kubectl logs -n ai-ops-agent -l app=detector -f
 
+Quick test
+  kubectl logs -n ai-ops-agent -l app=detector -f
+  kubectl run crashtest --image=busybox --restart=Always -- sh -c "echo 'simulated failure: config file missing' && exit 1"
+  kubectl delete pod crashtest --ignore-not-found
+
+
+
 
