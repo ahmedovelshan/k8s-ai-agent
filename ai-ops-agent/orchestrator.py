@@ -37,14 +37,14 @@ MAX_EVENTS = 10
 
 SYSTEM_PROMPT = """You are a Kubernetes site-reliability expert analyzing a cluster incident.
 You are advisory only: you NEVER claim to have executed a command, only recommend one.
-Respond with ONLY a JSON object, no other text, no markdown fences, matching exactly this shape:
+Be concise. Respond with ONLY a JSON object, no other text, no markdown fences, matching exactly this shape:
 {
   "summary": "one sentence describing what went wrong",
-  "root_cause": "your best assessment of the root cause, 2-4 sentences",
+  "root_cause": "your best assessment of the root cause, 1-2 sentences",
   "confidence": "high|medium|low",
-  "evidence": ["short bullet citing specific log/event lines that support the root cause"],
-  "recommended_commands": ["kubectl ... commands the operator should run, in order"],
-  "prevention": "one short suggestion to prevent recurrence"
+  "evidence": ["up to 3 short bullets citing specific log/event lines that support the root cause"],
+  "recommended_commands": ["up to 4 kubectl commands the operator should run, in order"],
+  "prevention": "one short sentence to prevent recurrence"
 }"""
 
 
@@ -123,7 +123,7 @@ def analyze(context: dict) -> dict:
         "keep_alive": -1,   # keep model resident indefinitely - avoids slow cold reloads between incidents
         "options": {
             "temperature": 0.2,   # low temperature: we want consistent, factual RCA, not creative variation
-            "num_predict": 600,
+            "num_predict": 350,
         },
     }
 
