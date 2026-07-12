@@ -4,7 +4,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: ai-agent-k8s-cluster
+  name: ai-agent-cluster
   region: eu-central-1
 
 vpc:
