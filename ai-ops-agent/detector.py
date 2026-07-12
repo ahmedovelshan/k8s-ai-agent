@@ -130,6 +130,7 @@ def inspect_pod(pod) -> list:
         ):
             reason = waiting.reason
             if not _already_seen(namespace, name, reason):
+                last_terminated = cs.last_state.terminated if cs.last_state else None
                 incidents.append({
                     "type": "container_waiting",
                     "namespace": namespace,
@@ -138,6 +139,8 @@ def inspect_pod(pod) -> list:
                     "reason": reason,
                     "message": waiting.message,
                     "restart_count": restart_count,
+                    "last_exit_code": last_terminated.exit_code if last_terminated else None,
+                    "last_termination_reason": last_terminated.reason if last_terminated else None,
                     "detected_at": datetime.now(timezone.utc).isoformat(),
                 })
                 _mark_seen(namespace, name, reason)
